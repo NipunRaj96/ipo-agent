@@ -1,0 +1,6 @@
+.env
+__pycache__/
+data/raw/
+data/prospectus/
+data/llm/
+.DS_Store

@@ -1,0 +1,30 @@
+name: gmp-snapshot
+
+on:
+  schedule:
+    # UTC. 09:45, 11:45, 13:45, 15:45, 16:45 IST; the last two cover the final bidding hours.
+    - cron: "15 4,6,8,10,11 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gmp-snapshot
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pandas lxml
+      - run: python src/log_gmp.py
+      - name: Commit snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/gmp_log.csv
+          git diff --cached --quiet || (git commit -m "GMP snapshot $(date -u +%FT%TZ)" && git push)
