@@ -2,8 +2,8 @@ name: gmp-snapshot
 
 on:
   schedule:
-    # UTC. 09:45, 11:45, 13:45, 15:45, 16:45 IST; the last two cover the final bidding hours.
-    - cron: "15 4,6,8,10,11 * * *"
+    # UTC. 11:00, 14:00 and 16:00 IST. GitHub may start a run 10-30 minutes late.
+    - cron: "30 5,8,10 * * *"
   workflow_dispatch:
 
 permissions:
