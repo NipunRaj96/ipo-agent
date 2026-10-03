@@ -10,7 +10,7 @@ import urllib.request
 
 token, chat = os.environ.get("TELEGRAM_BOT_TOKEN"), os.environ.get("TELEGRAM_CHAT_ID")
 text = sys.stdin.read().strip()
-if not (token and chat and "P(not loss" in text):
+if not (token and chat and "| sub " in text):
     print("notify: skipped (missing secrets or no open mainboard IPO)")
     sys.exit(0)
 req = urllib.request.Request(
