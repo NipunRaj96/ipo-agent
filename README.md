@@ -41,4 +41,3 @@ You need a free Telegram bot (made through @BotFather) and these values saved in
 
 - This is a personal research project, not financial advice. Please decide for yourself.
 - It is still being checked against real IPOs as they list.
-- Plans and test results are in the `build-plan` folder.
