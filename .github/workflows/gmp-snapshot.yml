@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: pip install pandas lxml
+      - run: pip install pandas lxml scikit-learn
       - run: python src/log_gmp.py
       - name: Commit snapshot
         run: |
@@ -28,3 +28,9 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/gmp_log.csv
           git diff --cached --quiet || (git commit -m "GMP snapshot $(date -u +%FT%TZ)" && git push)
+      - name: Telegram alert
+        continue-on-error: true
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python src/predict.py | python src/notify.py
