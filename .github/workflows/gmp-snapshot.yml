@@ -26,7 +26,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/gmp_log.csv
+          git add data/gmp_log.csv data/sub_log.csv
           git diff --cached --quiet || (git commit -m "GMP snapshot $(date -u +%FT%TZ)" && git push)
       - name: Telegram alert
         continue-on-error: true

@@ -18,7 +18,7 @@ Before the last day it only shows the current numbers and says "too early", beca
 
 ## How it works
 
-1. A few times a day it reads the public IPO table on InvestorGain and saves how many times the IPO has been oversubscribed (the more investors want it, the better it tends to do) along with the grey market price, the unofficial price people trade at before listing.
+1. A few times a day it reads the public IPO table on InvestorGain and saves how many times the IPO has been oversubscribed (the more investors want it, the better it tends to do), split by investor type (big institutions, wealthy individuals, ordinary retail investors), its valuation, and the grey market price, the unofficial price people trade at before listing.
 2. It compares that with 450 past IPOs from 2021 to 2026 and their actual results.
 3. It sends you the result on Telegram.
 
