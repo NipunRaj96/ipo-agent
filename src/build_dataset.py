@@ -20,7 +20,11 @@ def pct_in_parens(s):
 
 
 def parse_year(path):
-    t = pd.read_html(io.StringIO(path.read_text(encoding="utf-8")), attrs={"id": "reportTable"})[0]
+    return parse_html(path.read_text(encoding="utf-8"))
+
+
+def parse_html(html):
+    t = pd.read_html(io.StringIO(html), attrs={"id": "reportTable"})[0]
     t.columns = [c.replace("▲▼", "").strip() for c in t.columns]
     t = t.dropna(subset=["IPO"]).reset_index(drop=True)
     return pd.DataFrame({
