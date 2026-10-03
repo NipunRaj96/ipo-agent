@@ -39,3 +39,8 @@ Walk-forward, test years 2023-2025, n=253 (final subscription as the only featur
 - Calibration decision: no separate calibrator yet. Samples per cell are 26-110, too small to fit one reliably. Revisit once the live logger and new IPOs add data.
 - Day-1 close calibrates slightly worse in the middle buckets, as expected.
 - `src/baselines.py` deleted, replaced by `src/evaluate.py`.
+
+## Update 2026-10-03: 2026 IPOs added
+Dataset grew to 450 usable IPOs (2026 adds 93 listed so far). Walk-forward now tests 2023-2026 (n=346).
+- Brier, listing open: model 0.620 vs base-rate 0.758. Apply rule P(not loss) >= 0.90: 143 picks, precision 0.951 (95% CI 0.90-0.98).
+- 2026 alone (n=93, win rate 0.67, lower than 0.77-0.80 in 2023-2024): precision 0.912 on 34 picks (CI 0.77-0.97). At the 0.90 threshold it holds back 31 of the 62 IPOs that opened above issue price. Safe, but it misses many winners.

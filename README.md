@@ -19,14 +19,14 @@ Before the last day it only shows the current numbers and says "too early", beca
 ## How it works
 
 1. A few times a day it reads the public IPO table on InvestorGain and saves how many times the IPO has been oversubscribed (the more investors want it, the better it tends to do) along with the grey market price, the unofficial price people trade at before listing.
-2. It compares that with 357 past IPOs from 2021 to 2025 and their actual results.
+2. It compares that with 450 past IPOs from 2021 to 2026 and their actual results.
 3. It sends you the result on Telegram.
 
 It runs on its own on GitHub at about 11:00, 14:00 and 16:00 IST. It is free to run.
 
 ## How reliable is it?
 
-When tested on past IPOs, the picks it was most sure about (APPLY) did not lose at listing about 95% of the time. A cautious reading of that test puts it at 90% or a little above. It will be wrong sometimes.
+When tested on past IPOs (2023 to 2026), the picks it was most sure about (APPLY) did not lose at listing about 95% of the time. In 2026 alone, a tougher year for IPOs, it was about 91% on fewer picks. A cautious reading is around 90%. It will be wrong sometimes, and it plays safe: in 2026 it skipped or held back on most of the IPOs that did well.
 
 Two honest limits:
 

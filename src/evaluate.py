@@ -4,7 +4,7 @@ import numpy as np
 from model import LABELS, bucket, bucket_probs, fit, load
 
 TARGETS = {"listing open": "gain_open_pct", "day-1 close": "gain_close_pct"}
-YEARS = (2023, 2024, 2025)
+YEARS = (2023, 2024, 2025, 2026)
 PBINS = [0, 0.1, 0.25, 0.5, 1.0001]
 
 
