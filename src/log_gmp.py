@@ -41,7 +41,7 @@ def fetch_gmp(ts):
         "gmp_rs": t["GMP"].map(num), "gmp_pct": pct,
         "sub_x": t["Sub"].map(num), "price": t["Price (₹)"].map(lambda s: num(s, last=True)),
         "size_cr": t["IPO Size"].map(num), "lot": t["Lot"].map(num),
-        "open": t["Open"].str.split(" GMP").str[0], "close": t["Close"], "listing": t["Listing"],
+        "open": t["Open"].str.split(" GMP").str[0], "close": t["Close"].str.split(" GMP").str[0], "listing": t["Listing"],
         "gmp_updated_on": t["Updated-On"],
     }).dropna(subset=["name"])
 

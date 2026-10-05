@@ -2,8 +2,10 @@ name: gmp-snapshot
 
 on:
   schedule:
-    # UTC. 11:00, 14:00 and 16:00 IST. GitHub may start a run 10-30 minutes late.
-    - cron: "30 5,8,10 * * *"
+    # UTC. GitHub drops or delays scheduled runs (seen: 40-120 minutes late, some never), so run often.
+    # Weekdays every 30 minutes, 10:30-17:00 IST; weekends once a day.
+    - cron: "0,30 5-11 * * 1-5"
+    - cron: "30 5 * * 0,6"
   workflow_dispatch:
 
 permissions:
