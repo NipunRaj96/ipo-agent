@@ -50,7 +50,7 @@ def bars(p):
     return "<pre>" + "\n".join(cells) + "</pre>"
 
 
-blocks, verdict_shown = [], False
+blocks, verdict_shown, verdict_rows = [], False, []
 for row in live.itertuples():
     close = datetime.strptime(row.close_date, "%d-%m-%Y").date()
     if close < ist.date():
@@ -79,6 +79,20 @@ for row in live.itertuples():
         f"<i>{note}</i>",
     ]))
     verdict_shown = True
+    verdict_rows.append({
+        "snapshot_utc": snap, "name": row.name, "close_date": row.close_date, "total_x": row.total_x,
+        "p_loss": round(p_open[0], 4), "p_0_10": round(p_open[1], 4), "p_10_30": round(p_open[2], 4),
+        "p_30_plus": round(p_open[3], 4), "p_not_loss": round(p_ok, 4), "verdict": verdict,
+        "actionable": int(minutes < CLOSE_MINUTES),  # 0 = issued after bids closed, could not be acted on
+    })
+
+if verdict_rows:
+    out = ROOT / "data/verdicts.csv"
+    new = pd.DataFrame(verdict_rows)
+    if out.exists():
+        seen = set(zip(*pd.read_csv(out)[["snapshot_utc", "name"]].values.T))
+        new = new[[(a, b) not in seen for a, b in zip(new.snapshot_utc, new.name)]]
+    new.to_csv(out, mode="a", header=not out.exists(), index=False)
 
 if blocks:
     head = f"<b>IPO check</b> · {ist:%d %b, %H:%M} IST"

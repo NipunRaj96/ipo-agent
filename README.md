@@ -33,6 +33,10 @@ Two honest limits:
 - The tests used the final bidding numbers. On the last day, late bids can still change the picture, so SKIP and ABSTAIN are less certain than APPLY.
 - It only looks at how popular the IPO is. It does not read the company's accounts or news. We tried that and parked it for now.
 
+## Track record
+
+Every verdict it gives is saved, and each Saturday it is checked against how the IPO actually listed. You get a short scorecard on Telegram (how many APPLY, SKIP and ABSTAIN calls gained or lost). The full list is in `data/scorecard.csv`. Verdicts issued after bidding closed are marked, because you could not have acted on them.
+
 ## Setting it up
 
 You need a free Telegram bot (made through @BotFather) and these values saved in the GitHub repository settings under Secrets: `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`. After that the schedule does the rest. You can also start it by hand from the Actions tab.
