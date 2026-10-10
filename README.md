@@ -22,7 +22,7 @@ Before the last day it only shows the current numbers and says "too early", beca
 2. It compares that with 450 past IPOs from 2021 to 2026 and their actual results.
 3. It sends you the result on Telegram.
 
-It runs on its own on GitHub at about 11:00, 14:00 and 16:00 IST. It is free to run.
+It runs on its own on GitHub at 11:00, 14:00 and 16:00 IST on weekdays, started by a free outside timer. Every Saturday it also adds newly listed IPOs and their results to its history. It is free to run.
 
 ## How reliable is it?
 
