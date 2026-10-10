@@ -1,19 +1,24 @@
-"""Score mainboard IPOs from the latest logged snapshot with bucket probabilities.
+"""Build the IPO check message from the latest logged snapshot. Output is Telegram HTML (bold, monospace).
+
+Terminal view without tags: python3 src/predict.py | sed 's/<[^>]*>//g'
 
 Subscription comes from sub_log.csv, which keeps an IPO listed after bids close, unlike the GMP table.
 Verdicts only appear on the bid-close day from 15:30 IST (including after close, when numbers are final).
 Earlier the subscription multiple is not final and the model was trained on final multiples.
 """
+import html
 from datetime import datetime, timedelta
 
 import pandas as pd
 
-from model import LABELS, ROOT, bucket_probs, fit, load
+from model import ROOT, bucket_probs, fit, load
 
 APPLY_AT, SKIP_BELOW = 0.90, 0.50
 VERDICT_FROM_MINUTES = 15 * 60 + 30  # IST minutes after midnight
 CLOSE_MINUTES = 17 * 60  # bidding closes 17:00 IST
 EARLY_STATUS_HOUR = 11  # early "too early" notes only in this IST hour, to keep alerts quiet
+ROWS = ["Loss or flat", "Gain 0-10%", "Gain 10-30%", "Gain over 30%"]
+RULE = "\n\n" + "─" * 16 + "\n\n"
 
 hist = load()
 models = {"open": fit(hist, "gain_open_pct"), "close": fit(hist, "gain_close_pct")}
@@ -26,31 +31,57 @@ gmp = gmp_log.sort_values("scraped_at").dropna(subset=["gmp_rs"]).groupby("name"
 
 ist = datetime.fromisoformat(snap) + timedelta(hours=5, minutes=30)
 minutes = ist.hour * 60 + ist.minute
-fmt = lambda p: "  ".join(f"{l} {x:.0%}" for l, x in zip(LABELS, p))
 
-print(f"snapshot {ist:%d-%b %H:%M} IST | trained on {len(hist)} IPOs | apply if P(not loss)>={APPLY_AT}, skip if <{SKIP_BELOW}")
+
+def card(row, close, status_lines):
+    g = gmp.get(row.name)
+    return "\n".join([
+        f"<b>{html.escape(row.name)}</b>",
+        f"Bids close {close:%d %b}",
+        f"Subscription: {row.total_x}x (institutions {row.qib_x}x, retail {row.rii_x}x)",
+        f"Grey market premium: {'Rs ' + format(g, 'g') if g is not None else 'not available'}",
+        "",
+        *status_lines,
+    ])
+
+
+def bars(p):
+    cells = (f"{label:<15}{'█' * round(x * 10)}{'░' * (10 - round(x * 10))} {x:>4.0%}" for label, x in zip(ROWS, p))
+    return "<pre>" + "\n".join(cells) + "</pre>"
+
+
+blocks, verdict_shown = [], False
 for row in live.itertuples():
     close = datetime.strptime(row.close_date, "%d-%m-%Y").date()
-    head = (f"\n{row.name} | sub {row.total_x}x (QIB {row.qib_x}x, retail {row.rii_x}x) | "
-            f"GMP Rs{gmp.get(row.name, 'n/a')} | bids close {close:%d-%b}")
-    if close > ist.date():
-        if ist.hour == EARLY_STATUS_HOUR:
-            print(head + "\n  TOO EARLY: bids still open, subscription not final")
-        continue
     if close < ist.date():
         continue
+    if close > ist.date():
+        if ist.hour == EARLY_STATUS_HOUR:
+            blocks.append(card(row, close, ["<b>Status: too early.</b> Bidding is still open and the numbers are not final."]))
+        continue
     if minutes < VERDICT_FROM_MINUTES:
-        print(head + "\n  WAIT: last bidding day, most bids arrive in the final hours. Verdict after 15:30 IST")
+        blocks.append(card(row, close, ["<b>Status: wait.</b> Last bidding day. Most bids arrive in the final hours. Verdict after 3:30 PM IST."]))
         continue
     sub = 0 if pd.isna(row.total_x) else row.total_x
     p_open, p_close = bucket_probs(models["open"], [sub])[0], bucket_probs(models["close"], [sub])[0]
     p_ok = 1 - p_open[0]
     verdict = "APPLY" if p_ok >= APPLY_AT else "SKIP" if p_ok < SKIP_BELOW else "ABSTAIN"
-    print(head)
-    print(f"  open gain : {fmt(p_open)}")
-    print(f"  day-1 close: {fmt(p_close)}")
-    print(f"  P(not loss at open) {p_ok:.0%} -> {verdict}")
-    if minutes >= CLOSE_MINUTES:
-        print("  Bids have closed: final numbers. Compare with the listing result.")
-    else:
-        print("  Late bids can still raise the multiple, so treat SKIP/ABSTAIN as less certain than APPLY.")
+    note = ("Bids have closed. These are the final numbers." if minutes >= CLOSE_MINUTES
+            else "Late bids can still raise the subscription, so SKIP and ABSTAIN are less certain than APPLY.")
+    day1 = ", ".join(f"{label.lower().replace('gain ', '')} {x:.0%}" for label, x in zip(ROWS, p_close))
+    blocks.append(card(row, close, [
+        f"<b>Verdict: {verdict}</b> ({p_ok:.0%} chance of no loss at listing)",
+        "",
+        "<b>Listing price vs issue price</b>",
+        bars(p_open),
+        f"<b>End of day 1:</b> {day1}",
+        "",
+        f"<i>{note}</i>",
+    ]))
+    verdict_shown = True
+
+if blocks:
+    head = f"<b>IPO check</b> · {ist:%d %b, %H:%M} IST"
+    foot = f"<i>Based on {len(hist)} past IPOs (2021-2026). Personal research, not financial advice.</i>"
+    legend = "<i>APPLY: very likely not to lose. SKIP: a loss is more likely than not. ABSTAIN: unclear.</i>\n" if verdict_shown else ""
+    print(head + RULE + RULE.join(blocks) + RULE + legend + foot)

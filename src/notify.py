@@ -10,12 +10,12 @@ import urllib.request
 
 token, chat = os.environ.get("TELEGRAM_BOT_TOKEN"), os.environ.get("TELEGRAM_CHAT_ID")
 text = sys.stdin.read().strip()
-if not (token and chat and "| sub " in text):
+if not (token and chat and "Subscription:" in text):
     print("notify: skipped (missing secrets or no open mainboard IPO)")
     sys.exit(0)
 req = urllib.request.Request(
     f"https://api.telegram.org/bot{token}/sendMessage",
-    json.dumps({"chat_id": chat, "text": text[:4000]}).encode(),
+    json.dumps({"chat_id": chat, "text": text[:4000], "parse_mode": "HTML", "disable_web_page_preview": True}).encode(),
     {"Content-Type": "application/json"},
 )
 urllib.request.urlopen(req, timeout=30)
