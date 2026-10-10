@@ -70,6 +70,8 @@ def append(df, name):
 def main():
     ts = datetime.now(timezone.utc).isoformat(timespec="seconds")
     gmp, sub = fetch_gmp(ts), fetch_subscription(ts)
+    if gmp.empty or sub.empty:
+        raise SystemExit("snapshot is empty: the site layout may have changed")
     append(gmp, "gmp_log.csv")
     append(sub, "sub_log.csv")
     live = gmp[(gmp.segment == "IPO") & (gmp.status.isin(["O", "U"]))]
