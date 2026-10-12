@@ -70,10 +70,11 @@ def append(df, name):
 def main():
     ts = datetime.now(timezone.utc).isoformat(timespec="seconds")
     gmp, sub = fetch_gmp(ts), fetch_subscription(ts)
-    if gmp.empty or sub.empty:
-        raise SystemExit("snapshot is empty: the site layout may have changed")
+    if gmp.empty:  # the GMP table always lists upcoming IPOs; the subscription table is empty when nothing is open
+        raise SystemExit("GMP table is empty: the site layout may have changed")
     append(gmp, "gmp_log.csv")
-    append(sub, "sub_log.csv")
+    if not sub.empty:
+        append(sub, "sub_log.csv")
     live = gmp[(gmp.segment == "IPO") & (gmp.status.isin(["O", "U"]))]
     print(f"logged {len(gmp)} GMP rows, {len(sub)} subscription rows, {len(live)} mainboard open/upcoming")
     print(live[["name", "status", "gmp_rs", "gmp_pct", "sub_x", "price", "open", "close", "listing"]].to_string(index=False))

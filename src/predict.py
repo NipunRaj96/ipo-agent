@@ -23,10 +23,10 @@ RULE = "\n\n" + "─" * 16 + "\n\n"
 hist = load()
 models = {"open": fit(hist, "gain_open_pct"), "close": fit(hist, "gain_close_pct")}
 
-sub_log = pd.read_csv(ROOT / "data/sub_log.csv")
-snap = sub_log.scraped_at.max()
-live = sub_log[(sub_log.scraped_at == snap) & (sub_log.segment == "IPO")]
 gmp_log = pd.read_csv(ROOT / "data/gmp_log.csv")
+snap = gmp_log.scraped_at.max()  # every run writes GMP rows; subscription rows exist only while an IPO is open
+sub_log = pd.read_csv(ROOT / "data/sub_log.csv")
+live = sub_log[(sub_log.scraped_at == snap) & (sub_log.segment == "IPO")]
 gmp = gmp_log.sort_values("scraped_at").dropna(subset=["gmp_rs"]).groupby("name").gmp_rs.last().to_dict()  # last seen: closed IPOs leave the GMP table
 
 ist = datetime.fromisoformat(snap) + timedelta(hours=5, minutes=30)
