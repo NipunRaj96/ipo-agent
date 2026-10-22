@@ -5,3 +5,4 @@ data/prospectus/
 data/llm/
 .DS_Store
 build-plan/
+data/live_dataset.csv
