@@ -35,6 +35,9 @@ def parse_year(path):
 def parse_html(html):
     t = pd.read_html(io.StringIO(html), attrs={"id": "reportTable"})[0]
     t.columns = [c.replace("▲▼", "").strip() for c in t.columns]
+    if "IPO" not in t.columns:  # a year with no listings yet (early January) has an empty table
+        return pd.DataFrame(columns=["name", "listing_date", "size_cr", "sub_x", "gmp_rs", "issue_price",
+                                     "gain_open_pct", "gain_close_pct"])
     t = t.dropna(subset=["IPO"]).reset_index(drop=True)
     return pd.DataFrame({
         "name": t["IPO"],

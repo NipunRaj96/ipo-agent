@@ -23,14 +23,23 @@ def key(name):
 
 
 def refresh_outcomes():
-    year = datetime.now().year
-    html = urllib.request.urlopen(urllib.request.Request(URL.format(year), headers=UA), timeout=60).read().decode()
-    new = parse_html(html).dropna(subset=["listing_date"])
-    new["gmp_pct"] = new.gmp_rs / new.issue_price * 100
+    today = datetime.now()
+    years = [today.year - 1, today.year] if today.month == 1 else [today.year]  # late-December listings settle in January
     old = pd.read_csv(DATA / "ipos.csv", parse_dates=["listing_date"]).dropna(subset=["listing_date"])
-    out = pd.concat([old[old.listing_date.dt.year != year], new]).sort_values("listing_date")
-    out.to_csv(DATA / "ipos.csv", index=False)
-    print(f"ipos.csv: {len(old)} -> {len(out)} rows ({len(new)} for {year})")
+    out = old
+    for year in years:
+        html = urllib.request.urlopen(urllib.request.Request(URL.format(year), headers=UA), timeout=60).read().decode()
+        new = parse_html(html).dropna(subset=["listing_date"])
+        kept = out[out.listing_date.dt.year == year]
+        if len(new) < 0.8 * len(kept):
+            raise SystemExit(f"{year} table has {len(new)} rows but history has {len(kept)}: refusing to shrink it "
+                             "(the site layout may have changed)")
+        if new.empty:
+            continue
+        new["gmp_pct"] = new.gmp_rs / new.issue_price * 100
+        out = pd.concat([out[out.listing_date.dt.year != year], new])
+    out.sort_values("listing_date").to_csv(DATA / "ipos.csv", index=False)
+    print(f"ipos.csv: {len(old)} -> {len(out)} rows (refreshed {years})")
 
 
 def build_live_dataset():

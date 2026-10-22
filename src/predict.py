@@ -38,7 +38,8 @@ def card(row, close, status_lines):
     return "\n".join([
         f"<b>{html.escape(row.name)}</b>",
         f"Bids close {close:%d %b}",
-        f"Subscription: {row.total_x}x (institutions {row.qib_x}x, retail {row.rii_x}x)",
+        f"Subscription: {row.total_x}x (institutions {row.qib_x}x, retail {row.rii_x}x)" if pd.notna(row.total_x)
+        else "Subscription: not reported",
         f"Grey market premium: {'Rs ' + format(g, 'g') if g is not None else 'not available'}",
         "",
         *status_lines,
@@ -62,7 +63,10 @@ for row in live.itertuples():
     if minutes < VERDICT_FROM_MINUTES:
         blocks.append(card(row, close, ["<b>Status: wait.</b> Last bidding day. Most bids arrive in the final hours. Verdict after 3:30 PM IST."]))
         continue
-    sub = 0 if pd.isna(row.total_x) else row.total_x
+    if pd.isna(row.total_x):  # missing data must never turn into a confident SKIP
+        blocks.append(card(row, close, ["<b>Status: no subscription data.</b> The source did not report it, so no verdict."]))
+        continue
+    sub = row.total_x
     p_open, p_close = bucket_probs(models["open"], [sub])[0], bucket_probs(models["close"], [sub])[0]
     p_ok = 1 - p_open[0]
     verdict = "APPLY" if p_ok >= APPLY_AT else "SKIP" if p_ok < SKIP_BELOW else "ABSTAIN"
