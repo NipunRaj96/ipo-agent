@@ -1,12 +1,21 @@
-"""Parse saved InvestorGain mainboard tables (data/raw/ig_ipo_<year>.html) into data/ipos.csv."""
+"""Parse saved InvestorGain mainboard tables (data/raw/ig_ipo_<year>.html) into data/ipos.csv.
+
+python3 src/build_dataset.py --fetch   downloads the yearly tables first (2021 to this year, a few seconds apart).
+"""
 import io
 import re
+import sys
+import time
+import urllib.request
+from datetime import date
 from pathlib import Path
 
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
 NUM = re.compile(r"-?[\d,]+(?:\.\d+)?")
+URL = "https://www.investorgain.com/report/ipo-gmp-performance-tracker/377/ipo/?year={}"
+UA = {"User-Agent": "Mozilla/5.0 (Macintosh) ipo-agent personal research"}
 
 
 def first_num(s):
@@ -39,7 +48,19 @@ def parse_html(html):
     })
 
 
+def fetch(years):
+    raw = ROOT / "data/raw"
+    raw.mkdir(parents=True, exist_ok=True)
+    for year in years:
+        req = urllib.request.Request(URL.format(year), headers=UA)
+        (raw / f"ig_ipo_{year}.html").write_bytes(urllib.request.urlopen(req, timeout=60).read())
+        print("fetched", year)
+        time.sleep(3)
+
+
 def main():
+    if "--fetch" in sys.argv:
+        fetch(range(2021, date.today().year + 1))
     frames = [parse_year(p) for p in sorted((ROOT / "data/raw").glob("ig_ipo_*.html"))]
     df = pd.concat(frames, ignore_index=True)
     df["gmp_pct"] = df["gmp_rs"] / df["issue_price"] * 100

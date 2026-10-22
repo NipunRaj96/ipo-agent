@@ -12,12 +12,10 @@ from pathlib import Path
 
 import pandas as pd
 
-from build_dataset import parse_html
+from build_dataset import UA, URL, parse_html
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
-URL = "https://www.investorgain.com/report/ipo-gmp-performance-tracker/377/ipo/?year={}"
-UA = {"User-Agent": "Mozilla/5.0 (Macintosh) ipo-agent personal research"}
 
 
 def key(name):
