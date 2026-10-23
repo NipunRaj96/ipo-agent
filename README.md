@@ -19,8 +19,8 @@ It watches every Indian mainboard IPO while bids are open. On the last bidding d
 | Past IPOs it learned from | 457 mainboard IPOs, 2021 to Oct 2026 |
 | When it said APPLY (backtest, 2023-2026) | **95.2%** did not lose at listing (145 IPOs, 95% confidence range 90-98%) |
 | When it said SKIP | only 34% listed in profit (76 IPOs) |
-| Live verdicts so far | 6 before bidding closed (since 15 Oct 2026), tracked in [`data/scorecard.csv`](data/scorecard.csv) |
-| Live data collected | 53 snapshots, 635 price rows, 370 subscription rows (since 2 Oct 2026) |
+| Live verdicts so far | 6 before bidding closed (since 15 Oct 2026). Both APPLY calls listed in profit: **+23.6%** and **+65.7%** |
+| Live data collected | 54 snapshots, 643 price rows, 377 subscription rows (since 2 Oct 2026) |
 | Running cost | ₹0 (GitHub Actions, a free timer, a Telegram bot) |
 
 ## New to IPOs? The 30-second version
@@ -78,12 +78,12 @@ In 2026 alone, APPLY calls did not lose 91.7% of the time (36 IPOs, range 78-97%
 |---|---|---|---|
 | HD Fire Protect | APPLY (97%) | 21 Oct 2026 | **+23.6%** |
 | Fusion CX | SKIP (50%) | 22 Oct 2026 | +5.5% (a missed gain) |
-| Tonbo Imaging India | APPLY (96%) | 23 Oct 2026 | pending |
-| Zetwerk | SKIP (45%) | 23 Oct 2026 | pending |
-| Sahajanand Medical Technologies | ABSTAIN (63%) | 23 Oct 2026 | pending |
-| Bonfiglioli Transmissions | ABSTAIN (83%) | 23 Oct 2026 | pending |
+| Tonbo Imaging India | APPLY (96%) | 23 Oct 2026 | **+65.7%** |
+| Zetwerk | SKIP (45%) | 23 Oct 2026 | +5.5% (a missed gain) |
+| Sahajanand Medical Technologies | ABSTAIN (63%) | 23 Oct 2026 | +7.9% |
+| Bonfiglioli Transmissions | ABSTAIN (83%) | 23 Oct 2026 | 0.0% (flat) |
 
-Six live calls prove very little yet. The scorecard updates itself every week.
+So far: both APPLY calls gained, and the two SKIPs missed small gains of about 5%, which fits its cautious design. Six calls prove very little yet. Results for 23 Oct are from Groww on listing day; [`data/scorecard.csv`](data/scorecard.csv) updates itself every Saturday.
 
 ## What I learned building it
 
