@@ -1034,3 +1034,9 @@ scraped_at,name,segment,status,gmp_rs,gmp_pct,sub_x,price,size_cr,lot,open,close
 2026-11-04T05:30:47+00:00,Vectras Enprocon,BSE SME,C,0.0,0.0,4.2,105.0,53.05,1200.0,30-Oct,3-Nov,6-Nov,4-Nov 8:29
 2026-11-04T05:30:47+00:00,Maxwell Engineering Solutions,NSE SME,C,80.0,50.63,536.8,158.0,57.64,800.0,30-Oct,3-Nov,6-Nov,4-Nov 8:37
 2026-11-04T05:30:47+00:00,Bombay Coated and Special Steels,IPO,C,7.0,8.54,63.89,82.0,183.06,182.0,29-Oct,2-Nov,5-Nov,4-Nov 8:37
+2026-11-04T08:30:43+00:00,Antala Industries,BSE SME,O,0.0,0.0,2.25,66.0,22.98,2000.0,29-Oct,5-Nov,11-Nov,4-Nov 12:37
+2026-11-04T08:30:43+00:00,HGS (India),NSE SME,C,23.0,19.17,248.58,120.0,34.56,1200.0,30-Oct,3-Nov,6-Nov,4-Nov 12:37
+2026-11-04T08:30:43+00:00,Johnsoncab Electricals,BSE SME,C,6.0,3.0,23.82,200.0,56.02,600.0,30-Oct,3-Nov,6-Nov,4-Nov 12:37
+2026-11-04T08:30:43+00:00,Vectras Enprocon,BSE SME,C,0.0,0.0,4.2,105.0,53.05,1200.0,30-Oct,3-Nov,6-Nov,4-Nov 12:36
+2026-11-04T08:30:43+00:00,Maxwell Engineering Solutions,NSE SME,C,75.0,47.47,536.8,158.0,57.64,800.0,30-Oct,3-Nov,6-Nov,4-Nov 12:37
+2026-11-04T08:30:43+00:00,Bombay Coated and Special Steels,IPO,C,8.25,10.06,63.89,82.0,183.06,182.0,29-Oct,2-Nov,5-Nov,4-Nov 12:37
