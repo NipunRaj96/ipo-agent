@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parent.parent
 GMP_URL = "https://www.investorgain.com/report/ipo-gmp-live/331/"
 SUB_URL = "https://www.investorgain.com/report/ipo-subscription-live/333/"
 UA = "Mozilla/5.0 (Macintosh) ipo-agent personal research"
-GMP_NAME = re.compile(r"^(?P<name>.*?)\s+(?P<segment>IPO|BSE SME|NSE SME)(?P<status>[A-Z])$")
+GMP_NAME = re.compile(r"^(?P<name>.*?)\s+(?P<segment>IPO|BSE SME|NSE SME)(?P<status>[A-Z])")  # a label may follow, e.g. "L@94.00 (0%)"
 SUB_NAME = re.compile(r"^(?P<name>.*?)\s*(?P<segment>IPO|BSE SME|NSE SME)GMP:")
 NUM = re.compile(r"-?[\d,]+(?:\.\d+)?")
 
@@ -24,8 +24,18 @@ def num(s, last=False):
     return float(found[-1 if last else 0].replace(",", "")) if found else None
 
 
+CF_EMAIL = re.compile(r'<(a|span)[^>]*data-cfemail="([0-9a-f]+)"[^>]*>.*?</\1>', re.S)
+
+
+def cf_decode(hexstr):
+    # Cloudflare hides text that looks like an email (e.g. "L@94.00") behind an XOR-encoded attribute
+    key = int(hexstr[:2], 16)
+    return "".join(chr(int(hexstr[i:i + 2], 16) ^ key) for i in range(2, len(hexstr), 2))
+
+
 def read_table(url):
     html = urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": UA}), timeout=30).read().decode()
+    html = CF_EMAIL.sub(lambda m: cf_decode(m.group(2)), html)
     t = pd.read_html(io.StringIO(html), attrs={"id": "reportTable"})[0].dropna(how="all")
     t.columns = [c.replace("▲▼", "").strip() for c in t.columns]
     return t
@@ -41,7 +51,8 @@ def fetch_gmp(ts):
         "gmp_rs": t["GMP"].map(num), "gmp_pct": pct,
         "sub_x": t["Sub"].map(num), "price": t["Price (₹)"].map(lambda s: num(s, last=True)),
         "size_cr": t["IPO Size"].map(num), "lot": t["Lot"].map(num),
-        "open": t["Open"].str.split(" GMP").str[0], "close": t["Close"].str.split(" GMP").str[0], "listing": t["Listing"],
+        "open": t["Open"].str.split(" GMP").str[0], "close": t["Close"].str.split(" GMP").str[0],
+        "listing": t["Listing"].str.split(" GMP").str[0],
         "gmp_updated_on": t["Updated-On"],
     }).dropna(subset=["name"])
 
